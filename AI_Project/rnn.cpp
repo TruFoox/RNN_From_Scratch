@@ -33,6 +33,9 @@ void RNN::buildWeights() {
 
     bias.resize(hidden_size);
     initial_hidden_state.resize(hidden_size);
+    contributions.resize(hidden_size);
+    hiddenMath.resize(hidden_size);
+    pre_activation.resize(hidden_size);
 
     for (int i = 0; i < hidden_size; ++i) {
         bias[i] = ranWeights(gen);
@@ -42,15 +45,15 @@ void RNN::buildWeights() {
 }
 
 void RNN::trainWeights() {
-   int input[2] = {0, 1};
+    // Placeholder for training logic
+    std::cout << "Training weights..." << std::endl;
 
-   std::vector<float> contributions(hidden_size);
-   std::vector<float> hiddenMath(hidden_size);
-   std::vector<float> pre_activation(hidden_size);
+    forward_pass();
 
-	// Placeholder for training logic
-	std::cout << "Training weights..." << std::endl;
+    backward_pass();
+}
 
+void RNN::forward_pass() {
     for (int i = 0; i < hidden_size; ++i) {
         for (int j = 0; j < input_size; ++j) {
             contributions[i] += input_weights[i][j] * input[j];
@@ -58,7 +61,7 @@ void RNN::trainWeights() {
     }
 
     // Update hidden
-	for (int i = 0; i < hidden_size; ++i) {
+    for (int i = 0; i < hidden_size; ++i) {
         for (int j = 0; j < hidden_size; ++j) {
             hiddenMath[i] += initial_hidden_state[j] * hidden_weights[i][j];
         }
@@ -69,5 +72,5 @@ void RNN::trainWeights() {
 
         initial_hidden_state[i] = tanh(pre_activation[i]);
     }
-    
+
 }
