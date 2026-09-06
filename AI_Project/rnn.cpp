@@ -66,7 +66,8 @@ void RNN::trainWeights() {
 
     for (int i = 0; i < hidden_size; ++i) {
         pre_activation[i] = contributions[i] + hiddenMath[i] + bias[i];
-    }
 
+        initial_hidden_state[i] = tanh(pre_activation[i]);
+    }
     
 }
