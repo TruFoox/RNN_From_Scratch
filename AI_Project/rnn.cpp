@@ -67,17 +67,21 @@ void RNN::buildWeights() {
         }
     }
 }
-void RNN::trainWeights() {
+
+void RNN::trainWeights(char operation, int maxNum) {
     std::cout << "Training weights..." << std::endl;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(0, 100);
+    std::uniform_real_distribution<float> dis(0, maxNum);
 
     for (int t = 0; t < input_size; ++t) {
         hidden_state[t].resize(hidden_size, 0.0f);
     }
-
+    
     while (true) {
+        totalIterations++;
+        RNN::operation = operation;
+        RNN::hidden_size = pow(maxNum, 1.5);
 
         for (int t = 0; t < input_size; ++t) {
             for (int i = 0; i < hidden_size; ++i) {
@@ -93,15 +97,33 @@ void RNN::trainWeights() {
             backward_pass(t);
         }
 
-        if (input[1] < 200) {
-            input[0] += 1;
-            input[1] += 1;
+        input[0] = dis(gen);
+        input[1] = dis(gen);
+
+        switch (operation) { // Use selected operation
+            case 'x':
+                target = input[0] * input[1];
+                break;
+            case '+':
+                target = input[0] + input[1];
+                break;
+            case '-':
+                target = input[0] - input[1];
+                break;
+            case '/':
+                target = input[0] / input[1];
+                break;
         }
-        else {
-            input[0] = 0;
-            input[1] = 1;
-        }
-        target = input[1] + 1;
+
+        /*if (input[1] < 200) {
+          input[0] += 1;
+          input[1] += 1;
+          }
+          else {
+              input[0] = 0;
+              input[1] = 1;
+          }
+          target = input[1] + 1;*/
     }
 }
 
@@ -135,15 +157,12 @@ void RNN::forward_pass(int n) {
     }
 
     if (n == 0) {
-        for (int i = 0; i < input_size; ++i) {
-            std::cout << input[i] << " ";
-        }
-        std::cout << std::endl;
+
+        std::cout << input[0] << " " << operation << " " << input[1] << std::endl;
 
         float error = prediction[n] - target;
 
         std::cout << "Prediction: " << prediction[n] << " | Correct Answer: " << target << " | Error: " << error << std::endl;
-        std::cout << std::endl;
     }
 }
 
