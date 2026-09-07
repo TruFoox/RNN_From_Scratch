@@ -13,5 +13,7 @@ int main()
 {
 	RNN rnn;
 	rnn.buildWeights();
+
+	rnn.trainWeights();
 }
 

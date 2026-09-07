@@ -4,23 +4,25 @@
 
 class RNN {
 private:
+    int totalIterations;
+	float learningRate = 0.000001f;
+    int input_size = 2, hidden_size = 200;
+	std::vector<std::vector<float>> hidden_state, input_weights, hidden_weights, hidden_gradient; // Not array because it bitches and whines about the size variables not being a static constant
+	std::vector<float> bias, output;
+    float outputBias = 0.1;
 
-    int input_size = 2, hidden_size = 10;
-	std::vector<std::vector<float>> input_weights, hidden_weights; // Not array because it bitches and whines about the size variables not being a static constant
-	std::vector<float> bias, initial_hidden_state, output;
-    int outputBias = 0.1;
+    int input[2] = { 0, 1 }; // Input for the RNN
+    float target = 2; // Correct answer
+    std::vector<float> prediction;
 
-    int input[2] = { 0, 1 };
-
-    std::vector<float> contributions, hiddenMath, pre_activation;
+    std::vector<float> pre_activation;
 
 
-public:
-    /* Build random weights */
+public: 
     void buildWeights();
 
 	void trainWeights();
 
-    void forward_pass();
-    void backward_pass();
+    void forward_pass(int n);
+    void backward_pass(int n);
 };
