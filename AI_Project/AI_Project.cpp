@@ -20,7 +20,7 @@ int main()
 	std::cin >> maxNum;
 
 	RNN rnn;
-	rnn.buildWeights();
+	rnn.buildWeights(maxNum);
 
 	rnn.trainWeights(operation, maxNum);
 }

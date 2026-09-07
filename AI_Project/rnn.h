@@ -20,7 +20,7 @@ private:
 
 
 public: 
-    void buildWeights();
+    void buildWeights(int maxNum);
 
 	void trainWeights(char operation, int maxNum);
 

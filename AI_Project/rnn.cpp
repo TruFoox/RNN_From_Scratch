@@ -14,7 +14,9 @@
 #include <algorithm>
 #include <random>
 
-void RNN::buildWeights() {
+void RNN::buildWeights(int maxNum) {
+    RNN::hidden_size = static_cast<int>(pow(maxNum, 1.5));
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
@@ -69,10 +71,9 @@ void RNN::buildWeights() {
 }
 
 void RNN::trainWeights(char operation, int maxNum) {
-    std::cout << "Training weights..." << std::endl;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(0, maxNum);
+    std::uniform_real_distribution<float> dis(1, maxNum);
 
     for (int t = 0; t < input_size; ++t) {
         hidden_state[t].resize(hidden_size, 0.0f);
@@ -81,7 +82,6 @@ void RNN::trainWeights(char operation, int maxNum) {
     while (true) {
         totalIterations++;
         RNN::operation = operation;
-        RNN::hidden_size = pow(maxNum, 1.5);
 
         for (int t = 0; t < input_size; ++t) {
             for (int i = 0; i < hidden_size; ++i) {
@@ -111,7 +111,7 @@ void RNN::trainWeights(char operation, int maxNum) {
                 target = input[0] - input[1];
                 break;
             case '/':
-                target = input[0] / input[1];
+                target = (float)input[0] / input[1];
                 break;
         }
 
@@ -157,18 +157,16 @@ void RNN::forward_pass(int n) {
     }
 
     if (n == 0) {
-
-        std::cout << input[0] << " " << operation << " " << input[1] << std::endl;
-
         float error = prediction[n] - target;
 
-        std::cout << "Prediction: " << prediction[n] << " | Correct Answer: " << target << " | Error: " << error << std::endl;
+        std::cout << input[0] << " " << operation << " " << input[1] "| Prediction: " << prediction[n] << " | Correct Answer: " << target << " | Error: " << error << std::endl;
     }
 }
 
 void RNN::backward_pass(int n) {
     float output_gradient = 2.0f * (prediction[n] - target);
 
+    int numCollapsed = 0;
     for (int i = 0; i < hidden_size; ++i) {
         float dL_dHidden = output_gradient * output[i];
 
@@ -183,8 +181,12 @@ void RNN::backward_pass(int n) {
 
         hidden_gradient[n][i] =dL_dHidden * tanhGradient;
         if (hidden_gradient[n][i] == 0 || hidden_gradient[n][i] == -0) {
-            std::cout << "Gradients have collapsed\n";
+            numCollapsed++;
         }
+    }
+
+    if (numCollapsed > 0 && n == 0) {
+        std::cout << numCollapsed << " gradients have collapsed for this input\n";
     }
 
 
